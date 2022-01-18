@@ -45,54 +45,6 @@ var saveTasks = function () {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 };
 
-$(".list-group").on("click", "p", function () {
-  var text = $(this)
-    .text()
-    .trim();
-
-  var textInput = $("<textarea>")
-    .addClass("form-control")
-    .val(text);
-
-  $(this).replaceWith(textInput);
-
-  //  This puts cursor in the textarea
-  textInput.trigger("focus");
-
-});
-
-$(".list-group").on("blur", "textarea", function () {
-  // get the textarea's current value/text
-  var text = $(this)
-    .val()
-    .trim();
-
-  // get the parent ul's id attribute
-  var status = $(this)
-    .closest(".list-group")
-    .attr("id")
-    .replace("list-", "");
-
-  // get the task's position in the list of other li elements
-  var index = $(this)
-    .closest(".list-group-item")
-    .index();
-
-  tasks[status][index].text = text;
-  saveTasks();
-
-  // recreate p element
-  var taskP = $("<p>")
-    .addClass("m-1")
-    .text(text);
-
-  // replace textarea with p element
-  $(this).replaceWith(taskP);
-
-});
-
-
-
 // modal was triggered
 $("#task-form-modal").on("show.bs.modal", function () {
   // clear values
@@ -125,11 +77,55 @@ $("#task-form-modal .btn-primary").click(function () {
 
     saveTasks();
   }
+});
 
+// task text was clicked
+$(".list-group").on("click", "p", function () {
+  // get current text of p element
+  var text = $(this)
+    .text()
+    .trim();
+
+  // replace p element with a new textarea
+  var textInput = $("<textarea>").addClass("form-control").val(text);
+  $(this).replaceWith(textInput);
+
+  //  This puts cursor in the textarea
+  textInput.trigger("focus");
+});
+
+// editable field was un-focused
+$(".list-group").on("blur", "textarea", function () {
+  // get the textarea's current value/text
+  var text = $(this).val();
+  // .trim();  this was in code i copied from lesson but not in snapshot
+
+  // get the parent ul's id attribute (snapshot says: get status type and position in the list)
+  var status = $(this)
+    .closest(".list-group")
+    .attr("id")
+    .replace("list-", "");
+
+  // get the task's position in the list of other li elements
+  var index = $(this)
+    .closest(".list-group-item")
+    .index();
+
+  // update task in array and re-save to localstorage
+  tasks[status][index].text = text;
+  saveTasks();
+
+  // recreate p element
+  var taskP = $("<p>")
+    .addClass("m-1")
+    .text(text);
+
+  // replace textarea with p element(new content)
+  $(this).replaceWith(taskP);
 });
 
 // due date was clicked
-$(".list-group").on("click", "span", function() {
+$(".list-group").on("click", "span", function () {
   // get current text
   var date = $(this)
     .text()
@@ -146,13 +142,13 @@ $(".list-group").on("click", "span", function() {
 
   // automatically focus on new element
   dateInput.trigger("focus");
+});
 
-  // value of due date was changed
-$(".list-group").on("blur", "input[type='text']", function() {
+// value of due date was changed
+$(".list-group").on("blur", "input[type='text']", function () {
   // get current text
-  var date = $(this)
-    .val()
-    .trim();
+  var date = $(this).val();
+  // .trim(); this was in code from lesson but not in snapshot
 
   // get the parent ul's id attribute
   var status = $(this)
@@ -169,14 +165,13 @@ $(".list-group").on("blur", "input[type='text']", function() {
   tasks[status][index].date = date;
   saveTasks();
 
-  // recreate span element with bootstrap classes
+  // recreate span element with bootstrap classes and insert in place of input element
   var taskSpan = $("<span>")
     .addClass("badge badge-primary badge-pill")
     .text(date);
 
   // replace input with span element
   $(this).replaceWith(taskSpan);
-});
 });
 
 // remove all tasks
@@ -186,11 +181,9 @@ $("#remove-tasks").on("click", function () {
     $("#list-" + key).empty();
   }
   saveTasks();
-
 });
 
 
 // load tasks for the first time
 loadTasks();
-
 
